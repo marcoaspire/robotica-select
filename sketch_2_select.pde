@@ -27,21 +27,13 @@ void mousePressed() {
    {
      println("Opc 1:" + sb.getOpcionSelecionada() + "  opc2: " + sb2.getOpcionSelecionada() );
    }
-  println(mouseX + "," + mouseY );
-  /* size = sb.items.size();
-   pos inicial = sb.pos.y;
-   // sb.pos.y + dim.y
-   int itemSeleccionado = 100 - inicial/dim.y;
-   */
   if (sb.expandirSelect(mouseX, mouseY))
   {
-    println("dddd");
     sb2.contraerSelect();
   }
   
   if (sb.isExpandido())
   {
-    println("qwerty");
     sb.opcionSelecionada();
   }
 
@@ -138,15 +130,12 @@ class SelectBox {
     int posibleOpcion;
     // verificar x
     posibleOpcion = (int) ((mouseY-pos.y) /dim.y) -1;
-    println("Item sele="+posibleOpcion);
     if (posibleOpcion == -1 )
         return ;
     if (posibleOpcion >= 0 && posibleOpcion < items.size() )
     {
       opcionSeleccionada = posibleOpcion;
-        print(items.get(opcionSeleccionada));
       int y = (int) (opcionSeleccionada * dim.y +pos.y);
-      println("y="+ y );
     }
     else
       this.contraerSelect();
