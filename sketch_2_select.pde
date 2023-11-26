@@ -1,24 +1,33 @@
 SelectBox sb; //<>// //<>//
-int objetoSeleccionado;
+SelectBox sb2;
+Circulo cir;
 void setup() {
   size(300, 300);
-  sb = new SelectBox("test", new PVector(20, 20), new PVector(150, 50));
+  sb = new SelectBox("test", new PVector(20, 20), new PVector(150, 20));
   sb.addItem("Valor 1");
   sb.addItem("Valor 2");
   sb.addItem("Valor 3");
+  sb2 = new SelectBox("test2", new PVector(20, 50), new PVector(150, 20));
+  sb2.addItem("A");
+  sb2.addItem("B");
+  sb2.addItem("C");
+  cir = new Circulo(150, 200, 50);
+
 }
 
 void draw() {
   background(200);
+  sb2.dibujar();
   sb.dibujar();
+  cir.dibuja();
 }
 
 void mousePressed() {
+   if (cir.verificaCoordenadas(mouseX, mouseY))
+   {
+     println("Opc 1:" + sb.getOpcionSelecionada() + "  opc2: " + sb2.getOpcionSelecionada() );
+   }
   println(mouseX + "," + mouseY );
-
-  sb.opcionSelecionada();
-
-
   /* size = sb.items.size();
    pos inicial = sb.pos.y;
    // sb.pos.y + dim.y
@@ -26,48 +35,46 @@ void mousePressed() {
    */
   if (sb.expandirSelect(mouseX, mouseY))
   {
+    println("dddd");
+    sb2.contraerSelect();
+  }
+  
+  if (sb.isExpandido())
+  {
+    println("qwerty");
+    sb.opcionSelecionada();
+  }
+
+  if (sb2.isExpandido())
+  {
+    sb2.opcionSelecionada();
+  }
+
+  if (sb2.expandirSelect(mouseX, mouseY))
+  {
+    sb.contraerSelect();
   }
 }
 
-class OptionSelect {
-  private String texto;
-  private Boolean isSelected;
-  OptionSelect(String texto ) {
-    this.texto = texto;
-    isSelected = false;
-  }
-
-  void select() {
-    isSelected = !isSelected;
-    // rect(5,dim.y,dim.x,dim.y); // 1 y 2, location upper-left corner, 3-width, 4-height
-  }
-  
-  Boolean isSelected() {
-    return isSelected;
-  }
-  
-  String getTexto(){
-    return this.texto;
-  }
-}
 class SelectBox {
-  private ArrayList<OptionSelect> items;
+  private ArrayList<String> items;
   private String name;
   private Boolean expandido;
-  public PVector pos; //
-  public PVector dim; //  ancho y alto
+  private PVector pos; //
+  private PVector dim; //  ancho y alto
   private color colorFondo;
   private color colorTexto;
   private Integer opcionSeleccionada;
 
   SelectBox(String name, PVector pos, PVector dim) {
-    items = new ArrayList<OptionSelect>();
+    items = new ArrayList<String>();
     this.name = name;
     this.pos = pos;
     this.dim = dim;
     this.expandido = false;
     colorFondo = color(200);
     colorTexto = color(100);
+    opcionSeleccionada = -1;
   }
 
   public void dibujar() {
@@ -76,34 +83,31 @@ class SelectBox {
     fill(colorFondo);
     rect(0, 0, dim.x, dim.y);
     fill(colorTexto);
-    text("Select an item", 5, 0.7*dim.y);
 
+    if (opcionSeleccionada >= 0 && opcionSeleccionada< items.size() )
+      text(items.get(opcionSeleccionada), 5, 0.7*dim.y);
+    else
+      text("Select an item", 5, 0.7*dim.y);
+    
     if (expandido) {
-      // pintar
-      /*
-            fill(0);
-       rect(0, 0, dim.x, dim.y);
-       fill(colorTexto);
-       text("Select an item",5,0.7*dim.y);
-       */
-      for (int i=0; i< items.size();i++) {
-        if (items.get(i).isSelected())
-          fill(100);
-        else
+      for (int i=0; i< items.size(); i++) {
+        if (i == opcionSeleccionada)
+        {
+          fill(200);
+        } else
+        {
           fill(255);
+        }
         rect(5, dim.y*(i+1), dim.x, dim.y);
         fill(colorTexto);
-        text(items.get(i).getTexto(), 10, (dim.y*(i+1+1)-5));
-        noFill();
+        text(items.get(i), 10, (dim.y*(i+1+1)-5));
       }
-    } else {
     }
-
     popMatrix();
   }
 
   public void addItem(String c) {
-    items.add(new OptionSelect(c));
+    items.add(c);
   }
 
   public String getName() {
@@ -116,27 +120,87 @@ class SelectBox {
 
   public Boolean expandirSelect(int px, int py) {
     if (puntoSobrePrincipal(px, py)) {
-      expandido = !expandido;
+      this.expandido = !expandido;
       return expandido;
     }
     return false ;
   }
 
-  public boolean opcionSelecionada() {
-
-    // verificar x
-    objetoSeleccionado = (int) ((mouseY-sb.pos.y) /sb.dim.y);
-    println("Item sele="+objetoSeleccionado);
-    if (objetoSeleccionado > 0 && objetoSeleccionado<= items.size() )
-    {
-      items.get(objetoSeleccionado-1).select();
-      int y = (int) (objetoSeleccionado * sb.dim.y +sb.pos.y);
-      println("y="+ y );
-    
-    }
-    
-    
-    
-    return false;
+  public void contraerSelect() {
+    this.expandido = false;
   }
+
+  public Boolean isExpandido(){
+    return this.expandido;
+  }
+
+  public void opcionSelecionada() {
+    int posibleOpcion;
+    // verificar x
+    posibleOpcion = (int) ((mouseY-pos.y) /dim.y) -1;
+    println("Item sele="+posibleOpcion);
+    if (posibleOpcion == -1 )
+        return ;
+    if (posibleOpcion >= 0 && posibleOpcion < items.size() )
+    {
+      opcionSeleccionada = posibleOpcion;
+        print(items.get(opcionSeleccionada));
+      int y = (int) (opcionSeleccionada * dim.y +pos.y);
+      println("y="+ y );
+    }
+    else
+      this.contraerSelect();
+  }
+  public String getOpcionSelecionada() {
+    if (opcionSeleccionada >= 0 && opcionSeleccionada < items.size() )
+    {
+       return items.get(opcionSeleccionada);
+    }
+    return "Opcion no seleccionada";
+
+  }
+}
+
+
+class Circulo{
+  int x; 
+  int y; 
+  int d;
+  Circulo(int x, int y, int d)
+  {
+    this.x = x;
+    this.y = y;
+    this.d = d;
+  }
+  
+  int getX(){
+    return x;
+  }
+  
+  int getY(){
+    return y;
+  }
+  
+  int getD(){
+    return d;
+  }
+  
+  void dibuja(){
+    noFill();
+    circle(x, y, d);
+  }
+  
+  void pinta(int c){
+    fill(c);
+    circle(x, y, d);
+  }
+  
+  boolean verificaCoordenadas(int x1, int y1)
+  {
+      float distancia;
+      float radio = getD()/2;
+      distancia = sqrt(   sq(x- x1) + sq(y - y1)  );
+      return distancia<=radio;
+  }
+
 }
