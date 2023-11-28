@@ -1,18 +1,18 @@
-SelectBox sb; //<>// //<>//
+SelectBox sb; //<>//
 SelectBox sb2;
 Circulo cir;
+Boolean estaExpandido = false;
 void setup() {
   size(300, 300);
   sb = new SelectBox("test", new PVector(20, 20), new PVector(150, 20));
   sb.addItem("Valor 1");
   sb.addItem("Valor 2");
   sb.addItem("Valor 3");
-  sb2 = new SelectBox("test2", new PVector(20, 50), new PVector(150, 20));
+  sb2 = new SelectBox("test2", new PVector(20, 100), new PVector(150, 20));
   sb2.addItem("A");
   sb2.addItem("B");
   sb2.addItem("C");
   cir = new Circulo(150, 200, 50);
-
 }
 
 void draw() {
@@ -20,6 +20,19 @@ void draw() {
   sb2.dibujar();
   sb.dibujar();
   cir.dibuja();
+}
+
+void mouseMoved() {
+    if (sb.isExpandido())
+  {
+    sb.opcionSelecionada();
+  }
+
+  if (sb2.isExpandido())
+  {
+    sb2.opcionSelecionada();
+  }
+
 }
 
 void mousePressed() {
@@ -34,12 +47,15 @@ void mousePressed() {
   
   if (sb.isExpandido())
   {
-    sb.opcionSelecionada();
+    if (sb.opcionSelecionada())
+        sb.contraerSelect();
   }
 
   if (sb2.isExpandido())
   {
-    sb2.opcionSelecionada();
+    if (sb2.opcionSelecionada())
+        sb2.contraerSelect();
+
   }
 
   if (sb2.expandirSelect(mouseX, mouseY))
@@ -111,8 +127,9 @@ class SelectBox {
   }
 
   public Boolean expandirSelect(int px, int py) {
-    if (puntoSobrePrincipal(px, py)) {
+    if (puntoSobrePrincipal(px, py) && !expandido) {
       this.expandido = !expandido;
+      estaExpandido = !estaExpandido;
       return expandido;
     }
     return false ;
@@ -120,25 +137,31 @@ class SelectBox {
 
   public void contraerSelect() {
     this.expandido = false;
+
   }
 
   public Boolean isExpandido(){
     return this.expandido;
   }
 
-  public void opcionSelecionada() {
-    int posibleOpcion;
-    // verificar x
-    posibleOpcion = (int) ((mouseY-pos.y) /dim.y) -1;
+  public Boolean opcionSelecionada() {
+    int posibleOpcion = -1;
+    if (mouseX > (pos.x+5) && mouseX<= dim.x  )
+    {
+        posibleOpcion = (int) ((mouseY-pos.y) /dim.y) -1;
+    }
+
     if (posibleOpcion == -1 )
-        return ;
+        return false;
     if (posibleOpcion >= 0 && posibleOpcion < items.size() )
     {
       opcionSeleccionada = posibleOpcion;
       int y = (int) (opcionSeleccionada * dim.y +pos.y);
+      return true;
     }
     else
       this.contraerSelect();
+    return false;
   }
   public String getOpcionSelecionada() {
     if (opcionSeleccionada >= 0 && opcionSeleccionada < items.size() )
