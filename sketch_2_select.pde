@@ -3,21 +3,24 @@ SelectBox sb2;
 Circulo cir;
 Boolean estaExpandido = false;
 void setup() {
-  size(300, 300);
-  sb = new SelectBox("test", new PVector(20, 20), new PVector(150, 20));
+  size(200, 300);
+  sb = new SelectBox("test", new PVector(30, 50), new PVector(130, 20));
   sb.addItem("Valor 1");
   sb.addItem("Valor 2");
   sb.addItem("Valor 3");
-  sb2 = new SelectBox("test2", new PVector(20, 100), new PVector(150, 20));
+  sb2 = new SelectBox("test2", new PVector(30, 130), new PVector(130, 20));
   sb2.addItem("A");
   sb2.addItem("B");
   sb2.addItem("C");
-  cir = new Circulo(150, 200, 50);
+  cir = new Circulo(100, 250, 50);
 }
 
 void draw() {
   background(200);
+  fill(100);
+  text("Marca", 30, 40);
   sb2.dibujar();
+  text("Modelo", 30, 120);
   sb.dibujar();
   cir.dibuja();
 }
@@ -87,11 +90,11 @@ class SelectBox {
 
   public void dibujar() {
     pushMatrix();
+    text("Serial", 80, 20);
     translate(pos.x, pos.y);
     fill(colorFondo);
     rect(0, 0, dim.x, dim.y);
     fill(colorTexto);
-
     if (opcionSeleccionada >= 0 && opcionSeleccionada< items.size() )
       text(items.get(opcionSeleccionada), 5, 0.7*dim.y);
     else
@@ -198,7 +201,7 @@ class Circulo{
   }
   
   void dibuja(){
-    noFill();
+    fill(100);
     circle(x, y, d);
   }
   
